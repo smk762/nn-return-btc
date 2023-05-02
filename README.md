@@ -13,24 +13,26 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
 ```
 
-install node-v16
+## install node-v16
 
 ```bash
 nvm install v16
 nvm use v16
 ```
 
-clone and cd into the repo
+## clone and cd into the repo
 
 ```bash
 git clone https://github.com/gcharang/nn-return-btc && cd nn-return-btc
 ```
 
-install deps
+## install deps
 
 ```bash
 npm ci
 ```
+
+## run the script
 
 Open the `return-btc.js` file and input your wif and desired fee
 
