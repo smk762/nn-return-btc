@@ -29,7 +29,7 @@ const processUtxos = async utxos => {
     const totalValue = utxos.reduce((sum, utxo) => sum + utxo.value, 0);
     txb.addOutput("1E9eJhgXSskSw7DaiFGoeZWJ5XrnFUjgUR", totalValue - fee); //sending back `all - txnFee`
     inputs.forEach((input, index) => {
-        txb.sign(index, keyPair, "", bitcoin.Transaction.SIGHASH_ALL, input.satoshis);
+        txb.sign(index, keyPair);
     });
 
     let tx = txb.build();
