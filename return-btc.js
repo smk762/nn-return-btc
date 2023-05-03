@@ -31,9 +31,6 @@ const processUtxos = async utxos => {
     psbt.setVersion(2);
     psbt.setLocktime(0);
     inputs.forEach((input) => {
-        console.log(input.rawhex);
-        console.log(input.txId);
-        console.log(input.vout);
         psbt.addInput({
             hash: input.txId,
             index: input.vout,
@@ -53,7 +50,6 @@ const processUtxos = async utxos => {
         value: totalValue - fee,
     });
     inputs.forEach((input, index) => {
-        console.log("signing input");
         psbt.signInput(index, keyPair);
     });
     psbt.finalizeAllInputs();
