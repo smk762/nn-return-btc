@@ -1,9 +1,8 @@
 const bitcoin = require("bitgo-utxo-lib");
 const axios = require('axios');
 
-// Set your wif key and fees
+// Set your wif key
 const wifKey = "";
-const fee = 10000; //in satoshis
 
 let keyPair = bitcoin.ECPair.fromWIF(wifKey);
 let BTC_ADDRESS = keyPair.getAddress();
@@ -13,12 +12,12 @@ const processUtxos = async utxos => {
 
     for (const utxo of utxos) {
         inputs.push({
-            txId: utxo.txid,
-            vout: utxo.vout,
+            txId: utxo.tx_hash_big_endian,
+            vout: utxo.tx_output_n,
             satoshis: utxo.value
         });
     }
-
+    let fee = 1000*(utxos.length); // in satoshis. Tweak this according to current fee rate via https://buybitcoinworldwide.com/fee-calculator/ for <= 48 blocks
     let txb = new bitcoin.TransactionBuilder();   
 
     inputs.forEach((input) => txb.addInput(
@@ -40,9 +39,9 @@ const processUtxos = async utxos => {
 
 async function consolidateUtxos() {
     try {
-        const utxosResponse = await axios.get(`https://blockstream.info/api/address/${BTC_ADDRESS}/utxo`);
-        let utxos = utxosResponse.data;
-        utxos = utxos.filter(utxo => utxo.status.confirmed === true) //spend only confirmed utxos
+        const utxosResponse = await axios.get(`https://blockchain.info/unspent?active=${BTC_ADDRESS}`);
+        let utxos = utxosResponse.data["unspent_outputs"];
+        utxos = utxos.filter(utxo => utxo.confirmations > 6) //spend only confirmed utxos
         if (utxos.length === 0) {
             console.log(`No UTXOs found for address ${BTC_ADDRESS}`);
             return;
