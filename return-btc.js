@@ -28,12 +28,16 @@ const processUtxos = async utxos => {
             satoshis: utxo.value,
             rawhex: hex_dict[utxo.tx_hash_big_endian].data
         });
-        
+        if (inputs.length == 250) {
+            break;
+        }        
     }
+
     // Create psbt object (https://thebitcoinmanual.com/articles/what-is-psbt/)
     const psbt = new bitcoinjs.Psbt();
     psbt.setVersion(2);
     psbt.setLocktime(0);
+
     // Add inputs to psbt object
     inputs.forEach((input) => {
         console.log("Adding input: " + input.txId + " vout " + input.vout);
@@ -49,8 +53,8 @@ const processUtxos = async utxos => {
         })
     });
 
-    let fee = 1200*(utxos.length); // in satoshis. Tweak this according to current fee rate via https://buybitcoinworldwide.com/fee-calculator/ for <= 48 blocks
-    const totalValue = utxos.reduce((sum, utxo) => sum + utxo.value, 0);
+    let fee = 1200*(inputs.length); // in satoshis. Tweak this according to current fee rate via https://buybitcoinworldwide.com/fee-calculator/ for <= 48 blocks
+    const totalValue = inputs.reduce((sum, input) => sum + input.satoshis, 0);
     // Add output to psbt object
     psbt.addOutput({
         address: '1E9eJhgXSskSw7DaiFGoeZWJ5XrnFUjgUR',
@@ -67,6 +71,9 @@ const processUtxos = async utxos => {
     console.log(psbt.extractTransaction().toHex())
     console.log("Copy the above hex and decode it via https://live.blockcypher.com/btc/decodetx/");
     console.log("If it decodes and is correct, broadcast it via https://blockstream.info/tx/push");
+    if (inputs.length == 250) {
+        console.log("There is a limit of 250 inputs per transaction. Please run this script again to sweep the remaining inputs.");
+    }
 }
   
 async function consolidateUtxos() {
