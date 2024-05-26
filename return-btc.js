@@ -1,4 +1,4 @@
-const bitcoin = require("bitgo-utxo-lib");
+const utxolib = require('@bitgo/utxo-lib');
 const axios = require('axios');
 
 // Set your wif key
